@@ -48,6 +48,9 @@ switch (command) {
     case "movie":
     liriMovie();
     break;
+
+    default:
+    console.log("Im sorry, I don't know what you are asking. Please state whether you want a movie, music, or tweets")
 }
 
 
@@ -55,6 +58,10 @@ switch (command) {
 
 
 function runSpot(){
+
+    // if (musicInput = undefined) {
+    //     musicInput = "The Sign"
+    // };
 
 
     spotify.search({ type: 'track', query: musicInput, limit: 1  }, function(err, data) {
@@ -66,7 +73,13 @@ function runSpot(){
             var song =  data.tracks.items[l].name; 
          }
 
-         console.log(song);
+         if (song === undefined) {
+            console.log("No Title Found")
+            return;
+         } else {
+            console.log(song);
+         }
+         
         
     
         for (var i=0; i < data.tracks.items.length; i++) {
@@ -74,7 +87,9 @@ function runSpot(){
      
         }
     
+       
         console.log(artist);
+         
 
         for (var j=0; j < data.tracks.items.length; j++) {
            var album = data.tracks.items[j].album.name;           
@@ -95,10 +110,10 @@ function runOmdb(){
     var queryUrl = "http://www.omdbapi.com/?t=" + movieInput + "&y=&plot=short&apikey=17fc57f0";
   
     request(queryUrl, function(error, response, body) {
-        if(error) {
-            console.log(error)
-        } else {
+        if(!JSON.parse(body).Title) {
+            console.log("Not Found! I'd recommend inputting a title that exists")
 
+        } else {
             console.log("Title: " + JSON.parse(body).Title);
             console.log("Year: " + JSON.parse(body).Year);
             console.log("IMDB Score: " +  JSON.parse(body).Ratings[0].Value);
@@ -106,12 +121,9 @@ function runOmdb(){
             console.log("Production Company: " +  JSON.parse(body).Production);
             console.log("Language: " +  JSON.parse(body).Language);
             console.log("Plot: " +  JSON.parse(body).Plot);
-            console.log("Actors: " +  JSON.parse(body).Actors);
-            
+            console.log("Actors: " +  JSON.parse(body).Actors);           
         }
-
       });
-
 };
    
 
@@ -122,21 +134,15 @@ function liriSong (){
             type: 'input',
             message: 'What song do you want?',
             name: "song"
-        }, 
-        {
-            type:"confirm",
-            message:"Are you certain of your choice?",
-            name:"confirm",
-            default: true
         }
     
     
     ]).then(function(response) {
-            if (response.confirm) {
+    
                 musicInput = response.song
                 runSpot();
             
-            }
+            
     });
 
 }
@@ -161,21 +167,15 @@ function liriMovie (){
             type: 'input',
             message: 'What movie are you looking for?',
             name: "movie"
-        }, 
-        {
-            type:"confirm",
-            message:"Are you certain of your choice?",
-            name:"confirm",
-            default: true
-        }
-    
+        } 
+  
     
     ]).then(function(response) {
-            if (response.confirm) {
+
                 movieInput = response.movie
                 runOmdb();
+         
             
-            }
     });
 
 }
